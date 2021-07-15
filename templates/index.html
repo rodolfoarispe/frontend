@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Task Master</title>
+{% endblock %}
+
+{% block body %}
+
+<h3>Registros</h3>
+
+<div class="column is-7 ">
+    <form class="box" action="/" method="POST">
+        <div class="field">
+            <label class="label">Nota</label>
+            <div class="control">
+                <input type="text" class="input" name="content" id="content" placeholder="Nota" autofocus>
+                <span class="">*Campo obligatorio</span>
+            </div>
+            <div>
+                <br>
+                <input type="submit" class="button is-primary" value="Add Task">
+            </div>
+            </fieldset>
+    </form>
+</div>
+
+
+{% if tasks|length < 1 %} <h4> No hay registros. Cree el primero</h4>
+
+    {% else %}
+    <div class="column is-15">
+        <table class="table is-striped is-narrow is-fullwidth">
+            <thead>
+                <tr>
+                    <th>Task</th>
+                    <th>Added</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr class="">
+                    <td>{{ task.content }}</td>
+                    <td>{{ task.date_created.date() }} </td>
+                    <td>
+                        <a href="/delete/{{ task.id }}">Delete</a>
+                        &nbsp; | &nbsp;
+                        <a href="/update/{{ task.id }}">Update</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% endblock %}

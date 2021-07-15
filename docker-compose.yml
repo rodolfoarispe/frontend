@@ -1,0 +1,75 @@
+version: '3.7'
+# TOMADO DE: https://www.dabbleofdevops.com/blog/setup-a-mysql-python-docker-dev-stack
+# Run as
+# docker-compose build; docker-compose up -d
+# Check with
+# docker ps
+# Then check the logs with
+# docker logs --tail 50 $service_name
+# docker-compose images
+# docker-compose logs --tail 20 $service_name
+
+services:
+
+  mysql_db:
+    image: mysql:8.0.22
+    environment:   # Set up mysql database name and password
+      MYSQL_ROOT_PASSWORD: 123456789
+      MYSQL_DATABASE: datapos
+      MYSQL_USER: usuario2
+      MYSQL_PASSWORD: 123456789
+      LOCAL_INFILE: 1 #permitir el load local infile
+    ports:
+      - "3306:3306"
+    networks:
+      - app-tier
+    volumes:
+       - mysql_volume:/var/lib/mysql
+
+  python_app:
+    image: python-momi:latest
+    #build:
+    #  context: .
+    #  dockerfile: Dockerfile
+    depends_on:
+      - mysql_db
+    environment: 
+      DB_HOST: mysql_db
+      DB_NAME: datapos 
+      DB_USER: usuario2
+      DB_PASSWORD: 123456789
+    volumes:
+      #- ../momi:/app
+      - ./momi:/app
+    networks:
+      - app-tier
+    command:
+      tail -f /dev/null
+  
+  myadmin_app:
+    depends_on:
+      - mysql_db
+    networks:
+      - app-tier
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - '8080:80'
+    environment:
+      PMA_HOST: mysql_db
+      PMA_USER: root
+      PMA_PASSWORD: 123456789
+
+volumes:
+#  momi_src:
+#    driver: local
+#    driver_opts:
+#      type: none
+#      device: "host_mnt/D/Documentos/OneDrive - Rocarma S.A/Proyectos/MOMI-ETL/momi"
+#      o: bind
+  mysql_volume:
+
+networks:
+  app-tier:
+    driver: bridge
