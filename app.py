@@ -60,7 +60,7 @@ def update(id):
     if request.method == "POST":
         task.content = request.form['content']
     else:
-        return render_template('update.html', task=task)
+        return render_template('update.html', myapp=myApp(), task=task)
 
     try:
         db.session.commit()
